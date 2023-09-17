@@ -36,6 +36,9 @@ resource "aws_subnet" "subnet2" {
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.myvpc.id
+tags={
+  Name="igwTags"
+}
 
 }
 
@@ -48,6 +51,9 @@ resource "aws_route_table" "routetable" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
+tags={
+  Name="routeTable1"
+}
 }
 
 # now we have to attach the subnet with route table
@@ -107,6 +113,15 @@ resource "aws_security_group" "webSG" {
 
 resource "aws_s3_bucket" "s3bucket" {
     bucket = "sanjaysahmybucket"
+}
+
+resource "aws_network_interface" "mynetworkinterface"{
+    subnet_id=aws_route_table_association.RTAssociation1.id
+    security_groups=[aws_security_group.webSG.id]
+    private_ips = ["10.0.0.10"]
+    tags={
+      Name="myinternetid"
+    }
 }
 
 resource "aws_instance" "awsinstance1" {
